@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAPA SLOT</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: black; /* Fundo preto */
+            color: #fff;
+            position: relative;
+        }
+        img {
+            max-width: 300px; /* Ajuste o tamanho da imagem conforme necessário */
+            margin-bottom: 5px; /* Margem inferior alterada para 5px */
+        }
+        .slot-machine {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .reel {
+            width: 100px;
+            height: 300px;
+            border: 5px solid gold;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+            background-color: red;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        .symbol {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s linear;
+        }
+        button {
+            padding: 20px;
+            cursor: pointer;
+            font-size: 1.5em;
+            background-color: gold;
+            border: none;
+            border-radius: 50%; /* Botão redondo */
+            color: black; /* Texto preto */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+        button:hover {
+            background-color: orange;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <img src="images/titulo.png" alt="JAPA SLOT"> <!-- Substitua pelo caminho da sua imagem -->
+    <div class="slot-machine">
+        <div class="reel" id="reel1"></div>
+        <div class="reel" id="reel2"></div>
+        <div class="reel" id="reel3"></div>
+    </div>
+    <button onclick="spin()">Girar</button>
+    <div id="message"></div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const symbols = [
+            'images/tigre.png',
+            'images/checa.png',
+            'images/aranha.png',
+            'images/pinto.png',
+            'images/cobra.png',
+            'images/arara.png',
+            'images/perereca.png'
+        ];
+
+        let isSpinning = false;
+
+        function initializeReels() {
+            const reels = document.querySelectorAll('.reel');
+            reels.forEach(reel => {
+                for (let i = 0; i < 8; i++) {
+                    const img = document.createElement('img');
+                    img.classList.add('symbol');
+                    img.src = symbols[Math.floor(Math.random() * symbols.length)];
+                    reel.appendChild(img);
+                }
+            });
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            const reels = document.querySelectorAll('.reel');
+            const totalSymbols = reels[0].children.length;
+            const spinDuration = 3000;
+            const frameRate = 20;
+
+            reels.forEach(reel => {
+                let currentIndex = 0;
+
+                const interval = setInterval(() => {
+                    // Todas as colunas giram no mesmo sentido (para baixo)
+                    const direction = 'translateY(-100%)';
+                    reel.children[currentIndex].style.transform = direction;
+
+                    currentIndex = (currentIndex + 1) % totalSymbols; // Atualiza o índice
+                    reel.appendChild(reel.children[currentIndex]); // Move o símbolo para o final
+                }, frameRate);
+
+                setTimeout(() => {
+                    clearInterval(interval);
+                    for (let i = 0; i < totalSymbols; i++) {
+                        reel.children[i].src = symbols[Math.floor(Math.random() * symbols.length)];
+                    }
+                    isSpinning = false;
+                }, spinDuration);
+            });
+
+            createExplosionEffect();
+            
+            setTimeout(() => {
+                checkResult();
+            }, spinDuration + 1000);
+        }
+
+        function createExplosionEffect() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const numParticles = 100;
+            const button = document.querySelector('button');
+            const buttonRect = button.getBoundingClientRect();
+            const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+            const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+
+            for (let i = 0; i < numParticles; i++) {
+                particles.push({
+                    x: buttonCenterX,
+                    y: buttonCenterY,
+                    radius: Math.random() * 5 + 2,
+                    color: 'rgba(255, 215, 0, 1)',
+                    speed: Math.random() * 4 + 2,
+                    angle: Math.random() * 2 * Math.PI,
+                    life: 0
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((particle, index) => {
+                    particle.x += Math.cos(particle.angle) * particle.speed;
+                    particle.y += Math.sin(particle.angle) * particle.speed;
+                    particle.life++;
+
+                    const alpha = 1 - (particle.life / 30);
+                    ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    if (particle.life > 30) {
+                        particles.splice(index, 1);
+                    }
+                });
+
+                if (particles.length > 0) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            animate();
+        }
+
+        function checkResult() {
+            const message = document.getElementById('message');
+            const results = Array.from(document.querySelectorAll('.symbol')).map(symbol => symbol.src);
+            let win = false;
+
+            for (let i = 0; i < results.length; i += 3) {
+                if (results[i] === results[i + 1] && results[i + 1] === results[i + 2]) {
+                    message.textContent = 'Você ganhou na linha ' + (i / 3 + 1) + '!';
+                    win = true;
+                    break;
+                }
+            }
+
+            if (!win) {
+                for (let j = 0; j < 3; j++) {
+                    if (results[j] === results[j + 3] && results[j + 3] === results[j + 6]) {
+                        message.textContent = 'Você ganhou na coluna ' + (j + 1) + '!';
+                        win = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!win) {
+                message.textContent = 'Tente novamente!';
+            }
+        }
+
+        window.onload = initializeReels;
+    </script>
+</body>
+</html>

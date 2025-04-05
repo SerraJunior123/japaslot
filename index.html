@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAPA SLOT</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+        }
+        .background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            background: url('images/back.png') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            max-width: 1080px;
+            max-height: 1900px;
+        }
+        img {
+            width: 90%;
+            max-width: 500px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .slot-machine {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .reel {
+            width: 100px;
+            height: 300px;
+            border: 5px solid gold;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: darkred;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        .reel-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .symbol {
+            width: 100%;
+            height: 100px;
+            display: block;
+            margin: 0;
+            padding: 0;
+            object-fit: contain;
+        }
+        button {
+            padding: 20px;
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            font-size: 1.2em;
+            background-color: gold;
+            border: none;
+            border-radius: 50%;
+            color: black;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: gold;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: explode 0.8s ease-out forwards;
+        }
+        @keyframes explode {
+            0% { opacity: 1; transform: translate(0, 0); }
+            100% { opacity: 0; transform: translate(var(--x), var(--y)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="content">
+        <img src="images/titulo.png" alt="JAPA SLOT">
+        <div class="slot-machine">
+            <div class="reel" id="reel1"><div class="reel-content"></div></div>
+            <div class="reel" id="reel2"><div class="reel-content"></div></div>
+            <div class="reel" id="reel3"><div class="reel-content"></div></div>
+        </div>
+        <button onclick="triggerSpin(event)">Girar</button>
+    </div>
+    <script>
+        const symbols = ['images/tigre.png', 'images/checa.png', 'images/aranha.png', 'images/pinto.png', 'images/cobra.png', 'images/arara.png', 'images/perereca.png'];
+        let isSpinning = false;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initializeReels() {
+            const reels = document.querySelectorAll('.reel-content');
+            reels.forEach(reel => {
+                reel.innerHTML = '';
+                const shuffledSymbols = shuffleArray([...symbols]);
+                for (let i = 0; i < 30; i++) {
+                    const img = document.createElement('img');
+                    img.classList.add('symbol');
+                    img.src = shuffledSymbols[i % shuffledSymbols.length];
+                    reel.appendChild(img);
+                }
+            });
+        }
+
+        function triggerSpin(event) {
+            createParticles(event);
+            spin();
+        }
+
+        function createParticles(event) {
+            const button = event.currentTarget;
+            for (let i = 0; i < 35; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * 100 + 30;
+                particle.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+                particle.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+                button.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            const reels = document.querySelectorAll('.reel-content');
+            let spinningCount = reels.length;
+
+            reels.forEach((reel, index) => {
+                setTimeout(() => {
+                    reel.innerHTML = '';
+                    const shuffledSymbols = shuffleArray([...symbols]);
+                    for (let i = 0; i < 30; i++) {
+                        const img = document.createElement('img');
+                        img.classList.add('symbol');
+                        img.src = shuffledSymbols[i % shuffledSymbols.length];
+                        reel.appendChild(img);
+                    }
+
+                    let position = 0;
+                    let speed = 0;
+                    let acceleration = 0.5;
+                    let maxSpeed = 35;
+                    let decelerationStart = 2000;
+                    let deceleration = 0.3;
+                    let decelerating = false;
+                    const symbolHeight = 100;
+                    const totalSymbols = reel.children.length;
+                    const spinTime = 3000;
+                    let start = null;
+
+                    function animate(timestamp) {
+                        if (!start) start = timestamp;
+                        const progress = timestamp - start;
+
+                        if (progress > decelerationStart) {
+                            decelerating = true;
+                        }
+
+                        if (!decelerating && speed < maxSpeed) {
+                            speed += acceleration;
+                        } else if (decelerating && speed > 2) {
+                            speed -= deceleration;
+                        }
+
+                        position = (position + speed) % (totalSymbols * symbolHeight);
+                        reel.style.transform = `translateY(-${position}px)`;
+
+                        if (progress < spinTime) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            const nearestIndex = Math.round(position / symbolHeight) % totalSymbols;
+                            const finalOffset = nearestIndex * symbolHeight;
+                            reel.style.transition = 'transform 0.5s ease-out';
+                            reel.style.transform = `translateY(-${finalOffset}px)`;
+                            setTimeout(() => {
+                                reel.style.transition = '';
+                                spinningCount--;
+                                if (spinningCount === 0) {
+                                    isSpinning = false;
+                                }
+                            }, 500);
+                        }
+                    }
+
+                    requestAnimationFrame(animate);
+                }, index * 150);
+            });
+        }
+
+        window.onload = initializeReels;
+    </script>
+</body>
+</html>

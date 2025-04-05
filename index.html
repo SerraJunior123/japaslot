@@ -45,10 +45,10 @@
             padding-bottom: 30px;
         }
         img {
-            width: 70%; /* Reduzido para 70% para evitar sobreposição */
-            max-width: 400px; /* Ajuste para melhor visibilidade */
+            width: 70%;
+            max-width: 400px;
             height: auto;
-            margin: 10px 0 20px 0; /* Espaçamento entre o título e os rolos */
+            margin: 10px 0 20px 0;
         }
         .slot-machine {
             display: flex;
@@ -56,7 +56,7 @@
             margin-top: 0;
             margin-bottom: 25px;
             padding-top: 5px;
-            flex-wrap: nowrap; /* Garante que os rolos se mantenham na horizontal */
+            flex-wrap: nowrap;
         }
         .reel {
             width: 100px;
@@ -101,23 +101,62 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             position: relative;
             transition: transform 0.2s ease;
+            overflow: hidden;
         }
         button:active {
             transform: scale(0.95);
         }
+
+        /* Efeito de contorno circular animado, agora centralizado e com borda mais fina */
+        button::before {
+            content: '';
+            position: absolute;
+            top: 15px;  /* Reduziu mais para centralizar ainda mais */
+            left: 15px; /* Reduziu mais para centralizar ainda mais */
+            width: calc(100% - 30px); /* Reduzido para ajustar o contorno */
+            height: calc(100% - 30px); /* Reduzido para ajustar o contorno */
+            border-radius: 50%;
+            border: 2px solid rgba(255, 215, 0, 0.8); /* Borda mais fina */
+            animation: circular-border 2s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes circular-border {
+            0% {
+                transform: rotate(0deg);
+                border-color: rgba(255, 215, 0, 0.8);
+            }
+            50% {
+                transform: rotate(180deg);
+                border-color: rgba(255, 0, 0, 0.8); /* Cor vibrante para o meio da animação */
+            }
+            100% {
+                transform: rotate(360deg);
+                border-color: rgba(255, 215, 0, 0.8);
+            }
+        }
+
         .particle {
             position: absolute;
-            width: 6px;
-            height: 6px;
-            background: gold;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 1) 0%, rgba(255, 0, 0, 1) 100%);
             border-radius: 50%;
             pointer-events: none;
             animation: explode 0.8s ease-out forwards;
         }
+
         @keyframes explode {
-            0% { opacity: 1; transform: translate(0, 0); }
-            100% { opacity: 0; transform: translate(var(--x), var(--y)); }
+            0% { 
+                opacity: 1; 
+                transform: translate(0, 0);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(var(--x), var(--y));
+            }
         }
+
         .message {
             font-size: 2em;
             color: gold;
@@ -140,10 +179,9 @@
             padding: 10px;
         }
 
-        /* Ajustes para telas pequenas */
         @media (max-width: 768px) {
             img {
-                width: 80%; /* Ajustado para celulares maiores */
+                width: 80%;
                 max-width: 400px;
                 margin: 10px 0 15px 0;
             }
@@ -171,7 +209,7 @@
 
         @media (max-width: 480px) {
             img {
-                width: 90%; /* Ajustado para telas menores */
+                width: 90%;
                 max-width: 300px;
                 margin: 10px 0 10px 0;
             }
@@ -214,7 +252,6 @@
         <div class="controls">
             <button onclick="triggerSpin(event)">Girar</button>
             <div class="credits">Créditos: <span id="creditAmount">100</span></div>
-            <!-- Sistema de Bet -->
             <div class="bet-controls">
                 <button onclick="changeBet(-1)">-</button>
                 <div class="bet">Aposta: <span id="betAmount">1</span></div>
@@ -323,13 +360,13 @@
 
         function createParticles(e) {
             const button = e.currentTarget;
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 40; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = `${button.offsetLeft + button.offsetWidth / 2}px`;
                 particle.style.top = `${button.offsetTop + button.offsetHeight / 2}px`;
-                particle.style.setProperty('--x', `${(Math.random() - 0.5) * 100}px`);
-                particle.style.setProperty('--y', `${(Math.random() - 0.5) * 100}px`);
+                particle.style.setProperty('--x', `${(Math.random() - 0.5) * 150}px`);
+                particle.style.setProperty('--y', `${(Math.random() - 0.5) * 150}px`);
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 800);
             }
@@ -345,15 +382,18 @@
             });
 
             if (result.every(r => r && r === result[0])) {
-                document.getElementById('winMessage').textContent = `Você venceu! Aposta: ${bet}`;
-                credits += bet * 2; // Exemplo de ganho
+                document.getElementById('winMessage').textContent = 'Você Ganhou!';
+                credits += bet * 10; // Exemplo de multiplicador de ganho
             } else {
-                document.getElementById('winMessage').textContent = '';
+                document.getElementById('winMessage').textContent = 'Tente Novamente!';
             }
+
             document.getElementById('creditAmount').textContent = credits;
         }
 
-        window.onload = initializeReels;
+        window.onload = () => {
+            initializeReels();
+        };
     </script>
 </body>
 </html>

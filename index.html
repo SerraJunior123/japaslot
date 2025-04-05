@@ -32,31 +32,35 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: start;
             z-index: 1;
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
-            height: 100%;
             max-width: 1080px;
+            height: 100%;
+            max-height: 1900px;
             padding-bottom: 30px;
-            box-sizing: border-box;
+        }
+        img {
+            width: 70%;
+            max-width: 400px;
+            height: auto;
+            margin: 10px 0 20px 0;
         }
         .slot-machine {
             display: flex;
             gap: 15px;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            justify-content: center;
+            margin-top: 0;
             margin-bottom: 25px;
             padding-top: 5px;
-            width: 100%;
-            height: 60%;
-            max-height: 600px;
+            flex-wrap: nowrap;
         }
         .reel {
-            width: 33%;
-            max-width: 33%;
-            height: 100%;
+            width: 100px;
+            height: 300px;
             border: 5px solid gold;
             border-radius: 10px;
             overflow: hidden;
@@ -103,16 +107,16 @@
             transform: scale(0.95);
         }
 
-        /* Efeito de contorno circular animado */
+        /* Efeito de contorno circular animado, agora centralizado e com borda mais fina */
         button::before {
             content: '';
             position: absolute;
-            top: 15px;
-            left: 15px;
-            width: calc(100% - 30px);
-            height: calc(100% - 30px);
+            top: 10px;  /* Ajustado para centralizar no botão */
+            left: 10px; /* Ajustado para centralizar no botão */
+            width: calc(100% - 20px); /* Ajustado para reduzir o contorno */
+            height: calc(100% - 20px); /* Ajustado para reduzir o contorno */
             border-radius: 50%;
-            border: 2px solid rgba(255, 215, 0, 0.8);
+            border: 2px solid rgba(255, 215, 0, 0.8); /* Borda mais fina */
             animation: circular-border 2s infinite;
             pointer-events: none;
         }
@@ -124,11 +128,32 @@
             }
             50% {
                 transform: rotate(180deg);
-                border-color: rgba(255, 0, 0, 0.8);
+                border-color: rgba(255, 0, 0, 0.8); /* Cor vibrante para o meio da animação */
             }
             100% {
                 transform: rotate(360deg);
                 border-color: rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 1) 0%, rgba(255, 0, 0, 1) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: explode 0.8s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { 
+                opacity: 1; 
+                transform: translate(0, 0);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(var(--x), var(--y));
             }
         }
 
@@ -154,37 +179,35 @@
             padding: 10px;
         }
 
-        @media (max-width: 768px) {
+        /* Ajustes de estilo para telas maiores que 769px */
+        @media (min-width: 770px) {
+            img {
+                width: 70%;
+                max-width: 400px;
+                margin: 10px 0 20px 0;
+            }
             .slot-machine {
-                width: 90%; /* Ajusta a largura para se adequar à tela */
-                height: 50%; /* Ajusta a altura */
+                gap: 15px;
+                margin-top: 0;
+                margin-bottom: 25px;
             }
             .reel {
-                width: 32%; /* Garante que os 3 rolos fiquem 3x3 */
-                max-width: 32%; /* Garantir que a proporção seja 3x3 */
+                width: 100px;
+                height: 300px;
             }
             button {
-                width: 70px;
-                height: 70px;
-                padding: 15px;
+                width: 80px;
+                height: 80px;
+                padding: 20px;
+            }
+            .credits {
+                font-size: 1em;
+            }
+            .message {
+                font-size: 2em;
             }
         }
 
-        @media (max-width: 480px) {
-            .slot-machine {
-                width: 90%;
-                height: 50%;
-            }
-            .reel {
-                width: 32%; /* Proporção 3x3 */
-                max-width: 32%;
-            }
-            button {
-                width: 60px;
-                height: 60px;
-                padding: 12px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -271,59 +294,53 @@
                     setTimeout(() => {
                         reel.style.transition = 'none';
                         reel.style.transform = `translateY(-${finalOffset}px)`;
-                    }, 16);
+                    }, 100);
                 }
             }
+
             requestAnimationFrame(animateScroll);
         }
 
-        function spin() {
+        function triggerSpin() {
             if (isSpinning) return;
-            if (credits < bet) {
-                alert("Créditos insuficientes para apostar!");
-                return;
-            }
             isSpinning = true;
             document.getElementById('winMessage').textContent = '';
+            const stopIndexes = [Math.floor(Math.random() * 60), Math.floor(Math.random() * 60), Math.floor(Math.random() * 60)];
+
+            // Verifica se há créditos suficientes para apostar
+            if (credits < bet) {
+                document.getElementById('winMessage').textContent = 'Créditos insuficientes!';
+                isSpinning = false;
+                return;
+            }
+
             credits -= bet;
-
-            const stopIndexes = [
-                Math.floor(Math.random() * 57),
-                Math.floor(Math.random() * 57),
-                Math.floor(Math.random() * 57)
-            ];
-
-            const reels = document.querySelectorAll('.reel-content');
-            reels.forEach((reel, i) => {
-                stopReel(reel, stopIndexes[i], i * 150);
-            });
+            document.getElementById('creditAmount').textContent = credits;
+            
+            // Simula o giro dos rolos
+            stopReel(document.getElementById('reel1').querySelector('.reel-content'), stopIndexes[0], 0);
+            stopReel(document.getElementById('reel2').querySelector('.reel-content'), stopIndexes[1], 100);
+            stopReel(document.getElementById('reel3').querySelector('.reel-content'), stopIndexes[2], 200);
 
             setTimeout(() => {
                 checkWin(stopIndexes);
                 isSpinning = false;
-            }, 3200);
+            }, 2500);
         }
 
-        function triggerSpin(e) {
-            spin();
-        }
+        function checkWin(stopIndexes) {
+            const reel1Symbol = symbols[stopIndexes[0]];
+            const reel2Symbol = symbols[stopIndexes[1]];
+            const reel3Symbol = symbols[stopIndexes[2]];
 
-        function checkWin(indexes) {
-            const reels = document.querySelectorAll('.reel-content');
-            const totalSymbols = 60;
-            const result = indexes.map((index, i) => {
-                const adjustedIndex = index % totalSymbols;
-                const element = reels[i].children[adjustedIndex];
-                return element ? element.src : null;
-            });
-
-            if (result.every(r => r && r === result[0])) {
+            if (reel1Symbol === reel2Symbol && reel2Symbol === reel3Symbol) {
                 document.getElementById('winMessage').textContent = 'Você ganhou!';
-                credits += bet * 10; // Simula ganho
-                document.getElementById('creditAmount').textContent = credits;
+                credits += bet * 10;
             } else {
                 document.getElementById('winMessage').textContent = 'Tente novamente!';
             }
+
+            document.getElementById('creditAmount').textContent = credits;
         }
 
         initializeReels();

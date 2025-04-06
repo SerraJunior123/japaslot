@@ -48,7 +48,7 @@
             width: 70%;
             max-width: 400px;
             height: auto;
-            margin: 20px 0 20px 0;
+            margin: 10px 0 20px 0;
         }
         .slot-machine {
             display: flex;
@@ -82,11 +82,16 @@
         }
         .controls {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 30px; /* Distância balanceada entre os botões +, Girar e Créditos */
             margin-top: 10px;
+            flex-wrap: nowrap;
+        }
+        .bet-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
         button {
             padding: 20px;
@@ -106,8 +111,7 @@
         button:active {
             transform: scale(0.95);
         }
-
-        /* Efeito de contorno circular animado */
+        /* Efeito de contorno circular animado, agora centralizado e com borda mais fina */
         button::before {
             content: '';
             position: absolute;
@@ -120,7 +124,6 @@
             animation: circular-border 2s infinite;
             pointer-events: none;
         }
-
         @keyframes circular-border {
             0% {
                 transform: rotate(0deg);
@@ -136,27 +139,6 @@
             }
         }
 
-        .particle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 1) 0%, rgba(255, 0, 0, 1) 100%);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: explode 0.8s ease-out forwards;
-        }
-
-        @keyframes explode {
-            0% { 
-                opacity: 1; 
-                transform: translate(0, 0);
-            }
-            100% { 
-                opacity: 0; 
-                transform: translate(var(--x), var(--y));
-            }
-        }
-
         .message {
             font-size: 2em;
             color: gold;
@@ -168,17 +150,67 @@
             color: white;
             text-shadow: 1px 1px 2px #000;
         }
-        .bet-controls {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        .bet-controls button {
-            width: 40px;
-            height: 40px;
-            padding: 10px;
+
+        /* Ajustando a responsividade para não ser menor que 770px */
+        @media (max-width: 770px) {
+            img {
+                width: 80%;
+                max-width: 400px;
+                margin: 10px 0 15px 0;
+            }
+            .slot-machine {
+                gap: 10px;
+                margin-top: 0;
+                margin-bottom: 25px;
+            }
+            .reel {
+                width: 80px;
+                height: 240px;
+            }
+            button {
+                width: 70px;
+                height: 70px;
+                padding: 15px;
+            }
+            .bet-controls button {
+                width: 30px;
+                height: 30px;
+                padding: 5px;
+                font-size: 1.1em;
+            }
+            .credits {
+                font-size: 1em;
+            }
+            .message {
+                font-size: 1.5em;
+            }
         }
 
+        /* Ajuste específico para o botão girar */
+        .spin-button {
+            width: 75px;
+            height: 75px;
+            font-size: 1.2em;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+            margin-right: 20px; /* Distância ajustada para aproximar os créditos */
+        }
+
+        .spin-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Ajustando o tamanho dos botões - e + */
+        .bet-controls button {
+            padding: 5px;
+            width: 30px;
+            height: 30px;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
@@ -188,20 +220,20 @@
     </audio>
     <div class="background"></div>
     <div class="content">
-        <img src="images/titulo.png" alt="JAPA SLOT" style="margin-top: 20px; max-width: 450px;">
+        <img src="images/titulo.png" alt="JAPA SLOT" style="margin-top: 20px;">
         <div class="slot-machine">
             <div class="reel" id="reel1"><div class="reel-content"></div></div>
             <div class="reel" id="reel2"><div class="reel-content"></div></div>
             <div class="reel" id="reel3"><div class="reel-content"></div></div>
         </div>
         <div class="controls">
-            <button onclick="triggerSpin(event)">Girar</button>
-            <div class="credits">Créditos: <span id="creditAmount">100</span></div>
             <div class="bet-controls">
                 <button onclick="changeBet(-1)">-</button>
                 <div class="bet">Aposta: <span id="betAmount">1</span></div>
                 <button onclick="changeBet(1)">+</button>
             </div>
+            <button class="spin-button" onclick="triggerSpin(event)">Girar</button>
+            <div class="credits">Créditos: <span id="creditsAmount">100</span></div>
         </div>
         <div class="message" id="winMessage"></div>
     </div>
@@ -230,7 +262,7 @@
         }
 
         function changeBet(amount) {
-            bet = Math.max(1, bet + amount); 
+            bet = Math.max(1, bet + amount); // Garante que a aposta nunca seja menor que 1
             document.getElementById('betAmount').textContent = bet;
         }
 
@@ -271,45 +303,72 @@
             requestAnimationFrame(animateScroll);
         }
 
-        function triggerSpin() {
+        function spin() {
             if (isSpinning) return;
-            isSpinning = true;
-
-            document.getElementById('winMessage').textContent = '';
             if (credits < bet) {
-                alert("Você não tem créditos suficientes!");
-                isSpinning = false;
+                alert("Créditos insuficientes para apostar!");
                 return;
             }
-
+            isSpinning = true;
+            document.getElementById('winMessage').textContent = '';
             credits -= bet;
-            document.getElementById('creditAmount').textContent = credits;
 
-            document.querySelectorAll('.reel-content').forEach((reel, index) => {
-                const stopIndex = Math.floor(Math.random() * 60);
-                stopReel(reel, stopIndex, index * 300);
+            const stopIndexes = [
+                Math.floor(Math.random() * 57),
+                Math.floor(Math.random() * 57),
+                Math.floor(Math.random() * 57)
+            ];
+
+            const reels = document.querySelectorAll('.reel-content');
+            reels.forEach((reel, i) => {
+                stopReel(reel, stopIndexes[i], i * 150);
             });
 
             setTimeout(() => {
+                checkWin(stopIndexes);
                 isSpinning = false;
-            }, 3000);
+            }, 3200);
         }
 
-        initializeReels();
+        function triggerSpin(e) {
+            createParticles(e);
+            spin();
+        }
 
-        let touchStartY = 0;
-        let touchEndY = 0;
-
-        window.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;  
-        });
-
-        window.addEventListener('touchend', (e) => {
-            touchEndY = e.changedTouches[0].clientY;  
-            if (touchEndY - touchStartY > 100) { 
-                location.reload();
+        function createParticles(e) {
+            const button = e.currentTarget;
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${button.offsetLeft + button.offsetWidth / 2}px`;
+                particle.style.top = `${button.offsetTop + button.offsetHeight / 2}px`;
+                particle.style.setProperty('--x', `${(Math.random() - 0.5) * 150}px`);
+                particle.style.setProperty('--y', `${(Math.random() - 0.5) * 150}px`);
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
             }
-        });
+        }
+
+        function checkWin(indexes) {
+            const reels = document.querySelectorAll('.reel-content');
+            const totalSymbols = 60;
+            const result = indexes.map((index, i) => {
+                const adjustedIndex = index % totalSymbols;
+                const element = reels[i].children[adjustedIndex];
+                return element ? element.src : null;
+            });
+
+            if (result.every(r => r && r === result[0])) {
+                document.getElementById('winMessage').textContent = `Você venceu! Aposta: ${bet}`;
+                credits += bet * 2;
+            } else {
+                document.getElementById('winMessage').textContent = '';
+            }
+        }
+
+        window.onload = function() {
+            initializeReels();
+        };
     </script>
 </body>
 </html>

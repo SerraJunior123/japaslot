@@ -21,7 +21,9 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 100%;
+            max-width: 100%;
             height: 100%;
+            max-height: 100%;
             background: url('images/back.png') no-repeat center center;
             background-size: cover;
             z-index: -1;
@@ -43,10 +45,10 @@
             padding-bottom: 30px;
         }
         img {
-            width: 80%; /* Aumentado o tamanho da imagem */
+            width: 70%;
             max-width: 400px;
             height: auto;
-            margin: 20px 0 20px 0; /* Margin-top adicionado */
+            margin: 20px 0 20px 0;
         }
         .slot-machine {
             display: flex;
@@ -69,7 +71,6 @@
         .reel-content {
             display: flex;
             flex-direction: column;
-            position: relative;
         }
         .symbol {
             width: 100%;
@@ -106,16 +107,16 @@
             transform: scale(0.95);
         }
 
-        /* Efeito de contorno circular animado, agora centralizado e com borda mais fina */
+        /* Efeito de contorno circular animado */
         button::before {
             content: '';
             position: absolute;
-            top: 10px;  /* Ajustado para centralizar no botão */
-            left: 10px; /* Ajustado para centralizar no botão */
-            width: calc(100% - 20px); /* Ajustado para reduzir o contorno */
-            height: calc(100% - 20px); /* Ajustado para reduzir o contorno */
+            top: 10px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
             border-radius: 50%;
-            border: 2px solid rgba(255, 215, 0, 0.8); /* Borda mais fina */
+            border: 2px solid rgba(255, 215, 0, 0.8);
             animation: circular-border 2s infinite;
             pointer-events: none;
         }
@@ -127,7 +128,7 @@
             }
             50% {
                 transform: rotate(180deg);
-                border-color: rgba(255, 0, 0, 0.8); /* Cor vibrante para o meio da animação */
+                border-color: rgba(255, 0, 0, 0.8);
             }
             100% {
                 transform: rotate(360deg);
@@ -177,6 +178,7 @@
             height: 40px;
             padding: 10px;
         }
+
     </style>
 </head>
 <body>
@@ -186,7 +188,7 @@
     </audio>
     <div class="background"></div>
     <div class="content">
-        <img src="images/titulo.png" alt="JAPA SLOT" style="margin-top: 20px; width: 80%;">
+        <img src="images/titulo.png" alt="JAPA SLOT" style="margin-top: 20px; max-width: 450px;">
         <div class="slot-machine">
             <div class="reel" id="reel1"><div class="reel-content"></div></div>
             <div class="reel" id="reel2"><div class="reel-content"></div></div>
@@ -228,7 +230,7 @@
         }
 
         function changeBet(amount) {
-            bet = Math.max(1, bet + amount); // Garante que a aposta nunca seja menor que 1
+            bet = Math.max(1, bet + amount); 
             document.getElementById('betAmount').textContent = bet;
         }
 
@@ -269,71 +271,45 @@
             requestAnimationFrame(animateScroll);
         }
 
-        function spin() {
+        function triggerSpin() {
             if (isSpinning) return;
+            isSpinning = true;
+
+            document.getElementById('winMessage').textContent = '';
             if (credits < bet) {
-                alert("Créditos insuficientes para apostar!");
+                alert("Você não tem créditos suficientes!");
+                isSpinning = false;
                 return;
             }
-            isSpinning = true;
-            document.getElementById('winMessage').textContent = '';
+
             credits -= bet;
+            document.getElementById('creditAmount').textContent = credits;
 
-            const stopIndexes = [
-                Math.floor(Math.random() * 57),
-                Math.floor(Math.random() * 57),
-                Math.floor(Math.random() * 57)
-            ];
-
-            const reels = document.querySelectorAll('.reel-content');
-            reels.forEach((reel, i) => {
-                stopReel(reel, stopIndexes[i], i * 150);
+            document.querySelectorAll('.reel-content').forEach((reel, index) => {
+                const stopIndex = Math.floor(Math.random() * 60);
+                stopReel(reel, stopIndex, index * 300);
             });
 
             setTimeout(() => {
-                checkWin(stopIndexes);
                 isSpinning = false;
-            }, 3200);
-        }
-
-        function triggerSpin(e) {
-            createParticles(e);
-            spin();
-        }
-
-        function createParticles(e) {
-            const button = e.currentTarget;
-            for (let i = 0; i < 40; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = `${button.offsetLeft + button.offsetWidth / 2}px`;
-                particle.style.top = `${button.offsetTop + button.offsetHeight / 2}px`;
-                particle.style.setProperty('--x', `${(Math.random() - 0.5) * 150}px`);
-                particle.style.setProperty('--y', `${(Math.random() - 0.5) * 150}px`);
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 800);
-            }
-        }
-
-        function checkWin(indexes) {
-            const reels = document.querySelectorAll('.reel-content');
-            const totalSymbols = 60;
-            const result = indexes.map((index, i) => {
-                const adjustedIndex = index % totalSymbols;
-                const element = reels[i].children[adjustedIndex];
-                return element ? element.src : null;
-            });
-
-            if (result[0] === result[1] && result[1] === result[2]) {
-                credits += bet * 10; // Exemplo de multiplicador
-                document.getElementById('winMessage').textContent = `Você ganhou! +${bet * 10} créditos!`;
-            } else {
-                document.getElementById('winMessage').textContent = 'Tente novamente!';
-            }
-            document.getElementById('creditAmount').textContent = credits;
+            }, 3000);
         }
 
         initializeReels();
+
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        window.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;  
+        });
+
+        window.addEventListener('touchend', (e) => {
+            touchEndY = e.changedTouches[0].clientY;  
+            if (touchEndY - touchStartY > 100) { 
+                location.reload();
+            }
+        });
     </script>
 </body>
 </html>

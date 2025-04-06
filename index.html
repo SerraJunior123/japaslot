@@ -31,7 +31,7 @@
       z-index: 1;
       position: absolute;
       top: 52%;
-      left: 48%; /* Ajuste para mover ligeiramente à esquerda */
+      left: 48%;
       transform: translate(-50%, -50%);
       width: 100%;
       max-width: 1080px;
@@ -63,6 +63,7 @@
       display: flex;
       flex-direction: column;
       transition: none;
+      will-change: transform;
     }
     .reel-content.blur {
       filter: blur(0.015px);
@@ -74,6 +75,7 @@
       object-fit: contain;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
     .controls {
       display: flex;
@@ -218,7 +220,7 @@
 
         const totalSymbols = reel.children.length;
         const stopIndex = Math.floor(Math.random() * (totalSymbols - 2)) + 1;
-        const translateY = -(stopIndex - 1) * 100;
+        const translateY = -((stopIndex - 1) * 100);
 
         setTimeout(() => {
           reel.style.transition = `transform 1s linear`;
@@ -229,6 +231,7 @@
       setTimeout(() => {
         reels.forEach(reel => {
           reel.classList.remove('blur');
+          reel.style.transition = 'none';
         });
         isSpinning = false;
       }, 1500);

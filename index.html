@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=1080"/>
   <title>JAPA SLOT</title>
   <style>
     html, body {
@@ -48,7 +48,7 @@
     }
     img {
       display: block;
-      margin: 60px auto 20px auto;
+      margin: 100px auto 20px auto;
       width: 60%;
       max-width: 400px;
       height: auto;
@@ -148,6 +148,29 @@
       color: white;
       text-shadow: 1px 1px 2px #000;
     }
+
+    @media (max-width: 769px) {
+      body::before {
+        content: "Este jogo não é compatível com telas menores que 770px.";
+        display: flex;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+        color: white;
+        font-size: 1.5em;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        z-index: 9999;
+      }
+
+      .content, .background {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -202,6 +225,31 @@
       document.getElementById('betAmount').textContent = bet;
     }
 
+    function checkHorizontalWin() {
+      const reels = document.querySelectorAll('.reel-content');
+      const visibleSymbols = [
+        Array.from(reels[0].children),
+        Array.from(reels[1].children),
+        Array.from(reels[2].children)
+      ];
+
+      const topIndex = parseInt(reels[0].style.transform.match(/-?\d+/)) / -100 + 0;
+
+      const winLines = [0, 1, 2];
+      for (let line of winLines) {
+        const row = [
+          visibleSymbols[0][topIndex + line],
+          visibleSymbols[1][topIndex + line],
+          visibleSymbols[2][topIndex + line]
+        ];
+        if (row.every(img => img.src === row[0].src)) {
+          alert('Vitória na linha ' + (line + 1) + '!');
+          credits += bet * 5;
+          document.getElementById('creditsAmount').textContent = credits;
+        }
+      }
+    }
+
     function spin(button) {
       if (isSpinning) return;
       if (credits < bet) {
@@ -223,12 +271,14 @@
       }
 
       const reels = document.querySelectorAll('.reel-content');
+      const stopIndexes = [];
+
       reels.forEach((reel, index) => {
         reel.classList.add('blur');
-
         const totalSymbols = reel.children.length;
-        const stopIndex = Math.floor(Math.random() * (totalSymbols - 2)) + 1;
-        const translateY = -((stopIndex - 1) * 100);
+        const stopIndex = Math.floor(Math.random() * (totalSymbols - 3));
+        stopIndexes[index] = stopIndex;
+        const translateY = -(stopIndex * 100);
 
         setTimeout(() => {
           reel.style.transition = `transform 1s linear`;
@@ -237,11 +287,14 @@
       });
 
       setTimeout(() => {
-        reels.forEach(reel => {
-          reel.classList.remove('blur');
-          reel.style.transition = 'none';
+        document.querySelectorAll('.reel-content').forEach(reel => {
+          if (reel) {
+            reel.classList.remove('blur');
+            reel.style.transition = 'none';
+          }
         });
         isSpinning = false;
+        checkHorizontalWin();
       }, 1500);
     }
 

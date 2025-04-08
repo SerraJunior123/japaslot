@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JAPA SLOT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background"></div>
+  <div class="content">
+    <img src="images/titulo.webp" alt="JAPA SLOT" />
+    <div class="slot-machine">
+      <div class="reel"><div class="reel-content" id="reel1"></div></div>
+      <div class="reel"><div class="reel-content" id="reel2"></div></div>
+      <div class="reel"><div class="reel-content" id="reel3"></div></div>
+    </div>
+    <div class="controls">
+      <div class="bet-controls">
+        <button onclick="changeBet(-1)">-</button>
+        <div class="bet">Aposta: <span id="betAmount">1</span></div>
+        <button onclick="changeBet(1)">+</button>
+      </div>
+      <button class="spin-button" id="spinButton" onclick="spin(this)">Girar</button>
+      <div class="credits">Créditos: <span id="creditsAmount">100</span></div>
+    </div>
+  </div>
+
+  <div class="modal" id="outOfCreditsModal">
+    <div class="modal-content">
+      <p>Falha ao efetuar transação!<br>Deseja assistir a um anúncio para continuar jogando?</p>
+      <button class="watch-ad" onclick="watchAd()">Assistir anúncio</button>
+      <button class="close-modal" onclick="closeModal()">Fechar</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

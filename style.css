@@ -58,14 +58,17 @@ img {
   height: 300px;
   border: 5px solid gold;
   border-radius: 10px;
-  overflow: hidden;
   background-color: darkred;
   box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.3), 0 8px 25px rgba(0, 0, 0, 0.7);
+  height: 300px;
+  overflow: hidden;
+  position: relative;
 }
 .reel-content {
   display: flex;
   flex-direction: column;
   will-change: transform;
+  transition: transform 1s ease-out;
 }
 .shake {
   animation: tremor 0.15s ease-in-out infinite;
@@ -232,8 +235,11 @@ img {
 
 .symbol-wrapper {
   position: relative;
+  display: flex;
   width: 100px;
   height: 100px;
+  justify-content: center;
+  align-items: center;
 }
 
 .symbol {
@@ -433,153 +439,10 @@ img {
   100% { transform: rotate(0deg) scale(1); }
 }
 
-/* Aplicações */
 
-.win-tigre {
-  animation: pulse-zoom 1s infinite;
-  border: 3px solid gold;
-  border-radius: 10px;
-}
 
-.win-aranha {
-  animation: glow-spin 1s infinite;
-  border: 3px solid red;
-  border-radius: 10px;
-}
-
-.win-perereca {
-  animation: wiggle 0.8s infinite;
-  border: 3px solid lime;
-  border-radius: 10px;
-}
-
-.win-cobra {
-  animation: bounce-glow 1s infinite;
-  border: 3px solid orange;
-  border-radius: 10px;
-}
-
-.win-pinto {
-  animation: pulse-zoom 1s infinite;
-  border: 3px solid pink;
-  border-radius: 10px;
-}
-
-.win-arara {
-  animation: glow-spin 1s infinite;
-  border: 3px solid cyan;
-  border-radius: 10px;
-}
-
-.win-checa {
-  animation: wiggle 0.8s infinite;
-  border: 3px solid violet;
-  border-radius: 10px;
-}
-.win-particle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  animation: particle-fly-symbol 1s ease-out forwards;
-  pointer-events: none;
-  z-index: 3;
-}
-
-@keyframes particle-fly-symbol {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-40px) scale(0.5);
-    opacity: 0;
-  }
-}
 /* Estilos personalizados por tipo de símbolo vencedor */
-.win-tigre {
-  animation: pulse-tigre 1.5s infinite ease-in-out;
-  box-shadow: 0 0 20px 10px gold;
-  z-index: 2;
-}
 
-@keyframes pulse-tigre {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
-
-.win-aranha {
-  animation: pulse-aranha 1.5s infinite ease-in-out;
-  box-shadow: 0 0 20px 10px red;
-  z-index: 2;
-}
-
-@keyframes pulse-aranha {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-.win-perereca {
-  animation: pulse-perereca 1.5s infinite ease-in-out;
-  box-shadow: 0 0 20px 10px limegreen;
-  z-index: 2;
-}
-
-@keyframes pulse-perereca {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
-.win-cobra {
-  animation: pulse-cobra 1.5s infinite ease-in-out;
-  box-shadow: 0 0 20px 10px orange;
-  z-index: 2;
-}
-
-@keyframes pulse-cobra {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-.win-pinto {
-  animation: pulse-pinto 1.5s infinite ease-in-out;
-  box-shadow: 0 0 20px 10px hotpink;
-  z-index: 2;
-}
-
-@keyframes pulse-pinto {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
-.win-arara {
-  animation: pulse-arara 1.5s infinite ease-in-out;
-  box-shadow: 0 0 20px 10px cyan;
-  z-index: 2;
-}
-
-@keyframes pulse-arara {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.13); }
-  100% { transform: scale(1); }
-}
-
-.win-checa {
-  animation: pulse-checa 1.5s infinite ease-in-out;
-  box-shadow: 0 0 20px 10px violet;
-  z-index: 2;
-}
-
-@keyframes pulse-checa {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.14); }
-  100% { transform: scale(1); }
-}
 
 /* Partículas para vitórias */
 .win-particle {
@@ -602,5 +465,226 @@ img {
     transform: translateY(-20px) scale(0.5);
     opacity: 0;
   }
+}
+
+
+
+/* TIGRE: zoom com rotação */
+@keyframes tigre-zoom {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3) rotate(5deg); }
+  100% { transform: scale(1); }
+}
+.win-tigre {
+  animation: tigre-zoom 0.8s ease-in-out;
+}
+
+/* ARANHA: pulinho nervoso */
+@keyframes aranha-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px) scale(1.1); }
+}
+.win-aranha {
+  animation: aranha-bounce 0.8s ease-in-out;
+}
+
+/* PERERECA: giro e esticada */
+@keyframes perereca-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(360deg) scale(1.2); }
+  100% { transform: rotate(720deg) scale(1); }
+}
+.win-perereca {
+  animation: perereca-spin 1s ease-in-out;
+}
+
+/* COBRA: ondulação lateral */
+@keyframes cobra-wiggle {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+.win-cobra {
+  animation: cobra-wiggle 0.6s ease-in-out;
+}
+
+/* PINTO: estica e volta com zoom */
+@keyframes pinto-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4, 0.8); }
+  100% { transform: scale(1); }
+}
+.win-pinto {
+  animation: pinto-pop 0.7s ease-in-out;
+}
+
+/* ARARA: gira e dá zoom */
+@keyframes arara-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.3); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.win-arara {
+  animation: arara-spin 1s ease-in-out;
+}
+
+@keyframes checa-crazy {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  10% { transform: rotate(15deg) translate(-2px, 2px); }
+  20% { transform: rotate(-15deg) translate(2px, -2px); }
+  30% { transform: rotate(20deg) translate(-3px, 3px); }
+  40% { transform: rotate(-20deg) translate(3px, -3px); }
+  50% { transform: rotate(25deg) translate(-4px, 4px); }
+  60% { transform: rotate(-25deg) translate(4px, -4px); }
+  70% { transform: rotate(30deg) translate(-5px, 5px); }
+  80% { transform: rotate(-30deg) translate(5px, -5px); }
+  90% { transform: rotate(10deg) translate(-3px, 3px); }
+  100% { transform: rotate(0deg) translate(0, 0); }
+}
+
+.win-checa {
+  animation: checa-crazy 1.2s ease-in-out;
+}
+@keyframes checa-crazy {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  10% { transform: rotate(15deg) translate(-2px, 2px); }
+  20% { transform: rotate(-15deg) translate(2px, -2px); }
+  30% { transform: rotate(20deg) translate(-3px, 3px); }
+  40% { transform: rotate(-20deg) translate(3px, -3px); }
+  50% { transform: rotate(25deg) translate(-4px, 4px); }
+  60% { transform: rotate(-25deg) translate(4px, -4px); }
+  70% { transform: rotate(30deg) translate(-5px, 5px); }
+  80% { transform: rotate(-30deg) translate(5px, -5px); }
+  90% { transform: rotate(10deg) translate(-3px, 3px); }
+  100% { transform: rotate(0deg) translate(0, 0); }
+}
+
+.bonus-zoom {
+  animation: zoomBonus 1s ease-out forwards;
+}
+
+@keyframes zoomBonus {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.spark {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: yellow;
+  border-radius: 50%;
+  animation: sparkle 0.8s ease-out forwards;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes bonusBounceZoom {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.bounce-zoom {
+  animation: bonusBounceZoom 1s ease-in-out infinite;
+}
+@keyframes bonusBounceZoom {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.bounce-zoom {
+  animation: bonusBounceZoom 1s ease-in-out infinite;
+}
+
+.bonus-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: yellow;
+  border-radius: 50%;
+  animation: sparkle 0.8s ease-out forwards;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes bonusBounceZoom {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.bounce-zoom {
+  animation: bonusBounceZoom 1s ease-in-out infinite;
+}
+
+.bonus-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: yellow;
+  border-radius: 50%;
+  animation: sparkle 0.8s ease-out forwards;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 

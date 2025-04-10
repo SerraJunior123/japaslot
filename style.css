@@ -698,6 +698,7 @@ img {
 }
 
 .banner-content {
+  margin-top: 235px;
   display: flex;
   width: 300%; /* ou quanto precisar */
   animation: scroll-banner 20s linear infinite;

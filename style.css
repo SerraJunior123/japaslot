@@ -943,33 +943,10 @@ img {
   font-size: 1rem;
 }
 
-/* Media Queries para telas menores */
-@media (max-width: 768px) {
-  .loading-logo {
-    font-size: 1.5rem;
-    margin-bottom: 0.8rem;
-  }
 
-  #loading-bar-container {
-    max-width: 300px;
-  }
-
-  #loading-percent {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .loading-logo {
-    font-size: 1.2rem;
-  }
-
-  #loading-bar-container {
-    max-width: 250px;
-  }
-
-  #loading-percent {
-    font-size: 0.8rem;
-  }
+.content {
+  ...
+  height: 100dvh; /* substitui height: 100% + max-height */
+  overflow: hidden;
 }
 

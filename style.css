@@ -826,7 +826,6 @@ img {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-
 }
 
 #loading-background {
@@ -835,7 +834,6 @@ img {
   height: 100%;
   object-fit: cover;
   z-index: -1;
-  overflow: hidden;
 }
 
 #loading-container {

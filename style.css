@@ -805,7 +805,7 @@ img {
   width: 100vw;
   height: 100vh;
   background: url('images/loading-bg.jpg') no-repeat center center;
-  overflow: hidden;
+ overflow-x: hidden;
   background-size: cover;
   z-index: 9999;
   display: flex;

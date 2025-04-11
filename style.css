@@ -857,4 +857,117 @@ img {
   color: #fff;
   margin-top: 10px;
 }
+/* Estilo global para o Loading View */
+#loading-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; /* usa 100% da largura da tela */
+  height: 100%; /* usa 100% da altura */
+  overflow: hidden;
+  z-index: 9999;
+  transition: opacity 1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Background do Loading View */
+#loading-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('images/seu-background.jpg');
+  background-size: cover;
+  background-position: center; 
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+/* Container de Partículas */
+#loading-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Conteúdo do Loading (logo e barra) */
+.loading-logo,
+#loading-bar-container {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  padding: 0 10px;
+}
+
+/* Ajuste do Logo */
+.loading-logo {
+  font-size: 2rem;  /* use rem para escalabilidade */
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Container da Barra de Loading */
+#loading-bar-container {
+  width: 90%; /* ocupa quase toda a largura disponível */
+  max-width: 400px; /* define um valor máximo para telas maiores */
+}
+
+/* Barra de Loading */
+#loading-bar {
+  width: 100%;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+#loading-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(to right, #ffdd00, #ffa500);
+  transition: width 0.1s ease-out;
+}
+
+/* Exibição da porcentagem */
+#loading-percent {
+  font-size: 1rem;
+}
+
+/* Media Queries para telas menores */
+@media (max-width: 768px) {
+  .loading-logo {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  #loading-bar-container {
+    max-width: 300px;
+  }
+
+  #loading-percent {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-logo {
+    font-size: 1.2rem;
+  }
+
+  #loading-bar-container {
+    max-width: 250px;
+  }
+
+  #loading-percent {
+    font-size: 0.8rem;
+  }
+}
 

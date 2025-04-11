@@ -2,30 +2,130 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1080, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JAPA SLOT</title>
+  
+  <!-- Link para o CSS principal -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- Estilos específicos para o Loading View -->
+  <style>
+    /* Loading View - responsivo e com background */
+    #loading-view {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 9999;
+      transition: opacity 1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Elemento de Background do Loading */
+    #loading-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('images/seu-background.jpg'); /* Substitua pelo caminho correto */
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    /* Container para efeitos de partículas no Loading */
+    #loading-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    /* Conteúdo do Loading View (logo, barra e porcentagem) */
+    .loading-logo,
+    #loading-bar-container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #fff;
+      padding: 0 10px;
+    }
+    .loading-logo {
+      font-size: 2rem; /* Redimensiona conforme a tela */
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    #loading-bar-container {
+      width: 90%;
+      max-width: 400px;
+    }
+    #loading-bar {
+      width: 100%;
+      height: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+    /* Opcional: Caso use o fill interno */
+    #loading-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(to right, #ffdd00, #ffa500);
+      transition: width 0.1s ease-out;
+    }
+    #loading-percent {
+      font-size: 1rem;
+    }
+    /* Media Queries para responsividade */
+    @media (max-width: 768px) {
+      .loading-logo {
+        font-size: 1.5rem;
+        margin-bottom: 0.8rem;
+      }
+      #loading-bar-container {
+        max-width: 300px;
+      }
+      #loading-percent {
+        font-size: 0.9rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .loading-logo {
+        font-size: 1.2rem;
+      }
+      #loading-bar-container {
+        max-width: 250px;
+      }
+      #loading-percent {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+  
   <!-- Anime.js para animações -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
-  <!-- Loading View -->
+  <!-- Loading View com background e partículas -->
   <div id="loading-view">
-    <div class="loading-logo"></div>
+    <div id="loading-background"></div>
+    <div id="loading-particles"></div>
+    <div class="loading-logo">JAPA SLOT</div>
     <div id="loading-bar-container">
       <div id="loading-bar">
-        <!-- Caso queira utilizar o "loading-bar-fill", mantenha-o; caso contrário, pode ser removido -->
         <div id="loading-bar-fill"></div>
       </div>
-      <!-- Foi alterado para "loading-percent" para corresponder ao JS -->
       <div id="loading-percent">0%</div>
     </div>
   </div>
   
-  <!-- Container para o efeito de fogo (fica atrás do conteúdo principal) -->
+  <!-- Container para efeitos extras (fogo e partículas de fundo) -->
   <div id="tsparticles-fogo"></div>
-
-  <!-- Container para partículas de fundo (tsParticles) -->
   <div id="tsparticles" style="position: fixed; width: 100%; height: 100%; z-index: 0;"></div>
   
   <div class="background"></div>
@@ -49,7 +149,7 @@
         <div class="reel-content" id="reel3"></div>
       </div>
     </div>
-
+  
     <!-- Controles -->
     <div class="controls">
       <div class="bet-controls">
@@ -57,18 +157,18 @@
         <div class="bet">Aposta: <span id="betAmount">1</span></div>
         <button onclick="changeBet(1)">+</button>
       </div>
-      <!-- Botão de girar, o evento é configurado via JS -->
+      <!-- Botão de girar -->
       <button class="spin-button" id="spinButton">Girar</button>
       <div class="credits">Créditos: <span id="creditsAmount">100</span></div>
     </div>
   </div>
-
+  
   <!-- Banner promocional -->
   <div class="banner-content">
     <img src="images/barra1.png" alt="Mensagem promocional" />
     <img src="images/barra1.png" alt="Mensagem promocional duplicada" />
   </div>
-
+  
   <!-- Modal de sem créditos -->
   <div class="modal" id="outOfCreditsModal">
     <div class="modal-content">
@@ -77,16 +177,17 @@
       <button class="close-modal" onclick="closeModal()">Fechar</button>
     </div>
   </div>
-
+  
   <!-- Som de vitória -->
   <audio id="winSound" src="sounds/win.mp3" preload="auto"></audio>
-
+  
   <!-- tsParticles: biblioteca para partículas -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
+  
   <!-- Seu código principal -->
   <script src="game.js"></script>
   
-  <!-- Configuração das partículas de fundo (tsParticles) -->
+  <!-- Configuração das partículas para o fundo geral (tsParticles) -->
   <script>
     tsParticles.load("tsparticles", {
       fullScreen: { enable: false },
@@ -122,6 +223,39 @@
         modes: {
           bubble: { distance: 100, size: 6, duration: 2, opacity: 1, speed: 3 },
           repulse: { distance: 150, duration: 0.4 }
+        }
+      }
+    });
+  </script>
+  
+  <!-- Configuração dos efeitos de partículas no Loading View -->
+  <script>
+    tsParticles.load("loading-particles", {
+      fullScreen: { enable: false },
+      background: { color: { value: "transparent" } },
+      particles: {
+        number: { value: 20, density: { enable: true, area: 500 } },
+        color: { value: "#ffffff" },
+        shape: { type: "circle" },
+        opacity: { 
+          value: 0.5,
+          random: true,
+          animation: { enable: true, speed: 1, minimumValue: 0.3, sync: false }
+        },
+        size: { value: 3, random: true },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: "none",
+          random: true,
+          outModes: { default: "out" }
+        }
+      },
+      interactivity: {
+        detectsOn: "canvas",
+        events: {
+          onHover: { enable: false },
+          onClick: { enable: false }
         }
       }
     });

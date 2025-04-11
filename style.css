@@ -849,6 +849,7 @@ img {
   height: 20px;
   background-color: orange;
   transition: width 0.3s ease;
+  margin-top: 100px;
 }
 
 #loading-text {
@@ -856,3 +857,4 @@ img {
   color: #fff;
   margin-top: 10px;
 }
+

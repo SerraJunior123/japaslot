@@ -1,3 +1,4 @@
+// Variáveis globais e configuração inicial
 let credits = 100;
 const bets = [0.40, 0.80, 1.00, 2.50, 5.00, 10.00];
 let betIndex = 0;
@@ -16,7 +17,7 @@ const symbols = [
 let stopIndexes = [];
 let matchedSymbols = new Set();
 
-// Formata créditos para reais
+// Função para formatar créditos em reais
 function formatCredits(value) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -41,6 +42,7 @@ function getRandomSymbol() {
 }
 
 function initializeReels() {
+  // Procura pelos elementos com a classe .reel-content
   document.querySelectorAll('.reel-content').forEach(reel => {
     reel.innerHTML = '';
     for (let i = 0; i < 20; i++) {
@@ -58,13 +60,20 @@ function initializeReels() {
 function changeBet(direction) {
   betIndex = Math.min(Math.max(betIndex + direction, 0), bets.length - 1);
   bet = bets[betIndex];
-  document.getElementById('betAmount').textContent = formatCredits(bet);
+  // Verifica se o elemento existe antes de modificar o textContent
+  const betAmountEl = document.getElementById('betAmount');
+  if (betAmountEl) {
+    betAmountEl.textContent = formatCredits(bet);
+  }
 }
 
 function spin(button) {
   if (isSpinning) return;
   if (credits < bet) {
-    document.getElementById('outOfCreditsModal').style.display = 'flex';
+    const modal = document.getElementById('outOfCreditsModal');
+    if (modal) {
+      modal.style.display = 'flex';
+    }
     return;
   }
   
@@ -86,7 +95,10 @@ function spin(button) {
   
   isSpinning = true;
   credits -= bet;
-  document.getElementById('creditsAmount').textContent = formatCredits(credits);
+  const creditsAmountEl = document.getElementById('creditsAmount');
+  if (creditsAmountEl) {
+    creditsAmountEl.textContent = formatCredits(credits);
+  }
   
   // Cria partículas animadas no botão de girar
   for (let i = 0; i < 80; i++) {
@@ -103,7 +115,9 @@ function spin(button) {
   const baseStopIndex = Math.floor(Math.random() * (20 - 4 - 2)) + 1;
   
   reels.forEach((reel, index) => {
-    reel.parentElement.classList.add('shake');
+    if (reel.parentElement) {
+      reel.parentElement.classList.add('shake');
+    }
     const variation = Math.floor(Math.random() * 2);
     const stopIndex = Math.min(baseStopIndex + variation, 16);
     stopIndexes.push(stopIndex);
@@ -115,7 +129,11 @@ function spin(button) {
   });
   
   setTimeout(() => {
-    reels.forEach(reel => reel.parentElement.classList.remove('shake'));
+    reels.forEach(reel => {
+      if (reel.parentElement) {
+        reel.parentElement.classList.remove('shake');
+      }
+    });
     isSpinning = false;
     checkWin();
   }, 1500);
@@ -170,20 +188,22 @@ function createParticlesForSymbol(symbol, type) {
 
 function createBonusEffect() {
   const bonusImg = document.getElementById('bonusImage');
-  bonusImg.classList.add('bounce-zoom');
-  for (let i = 0; i < 100; i++) {
-    const spark = document.createElement('span');
-    spark.className = 'bonus-particle';
-    spark.style.left = `${50 + (Math.random() * 100 - 50)}%`;
-    spark.style.top = `${50 + (Math.random() * 100 - 50)}%`;
-    spark.style.animationDelay = `${Math.random() * 0.5}s`;
-    document.body.appendChild(spark);
-    setTimeout(() => spark.remove(), 4000);
+  if (bonusImg) {
+    bonusImg.classList.add('bounce-zoom');
+    for (let i = 0; i < 100; i++) {
+      const spark = document.createElement('span');
+      spark.className = 'bonus-particle';
+      spark.style.left = `${50 + (Math.random() * 100 - 50)}%`;
+      spark.style.top = `${50 + (Math.random() * 100 - 50)}%`;
+      spark.style.animationDelay = `${Math.random() * 0.5}s`;
+      document.body.appendChild(spark);
+      setTimeout(() => spark.remove(), 4000);
+    }
+    setTimeout(() => {
+      bonusImg.style.display = 'none';
+      bonusImg.classList.remove('bounce-zoom');
+    }, 3000);
   }
-  setTimeout(() => {
-    bonusImg.style.display = 'none';
-    bonusImg.classList.remove('bounce-zoom');
-  }, 3000);
 }
 
 function createCoinExplosion() {
@@ -216,6 +236,7 @@ function checkWin() {
   const getFileName = (src) => src.substring(src.lastIndexOf('/') + 1);
   const visibleSymbols = [[], [], []];
   
+  // Monta uma matriz 3x3 dos símbolos visíveis
   for (let col = 0; col < 3; col++) {
     for (let row = 0; row < 3; row++) {
       const idx = stopIndexes[col] + row;
@@ -228,6 +249,7 @@ function checkWin() {
     }
   }
   
+  // Função auxiliar para checar combinações
   const checkMatch = (symbolsArray, multiplier) => {
     if (symbolsArray.every(Boolean)) {
       const names = symbolsArray.map(s => getFileName(s.src));
@@ -257,7 +279,10 @@ function checkWin() {
   
   if (win > 0) {
     credits += win;
-    document.getElementById('creditsAmount').textContent = formatCredits(credits);
+    const creditsAmountEl = document.getElementById('creditsAmount');
+    if (creditsAmountEl) {
+      creditsAmountEl.textContent = formatCredits(credits);
+    }
     createCoinExplosion();
     if (checaCount >= 3) {
       const bonusImg = document.getElementById('bonusImage');
@@ -273,11 +298,17 @@ function checkWin() {
 function watchAd() {
   closeModal();
   credits += 50;
-  document.getElementById('creditsAmount').textContent = formatCredits(credits);
+  const creditsAmountEl = document.getElementById('creditsAmount');
+  if (creditsAmountEl) {
+    creditsAmountEl.textContent = formatCredits(credits);
+  }
 }
 
 function closeModal() {
-  document.getElementById('outOfCreditsModal').style.display = 'none';
+  const modal = document.getElementById('outOfCreditsModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
 }
 
 function animarSimbolosVencedores() {
@@ -331,18 +362,25 @@ tsParticles.load("fireEffect", {
   interactivity: { events: {} }
 });
 
-// Inicializa os rolos e associa o evento ao botão de girar
+// Inicializa os rolos e associa o evento ao botão de girar, garantindo que o DOM já esteja carregado
 window.onload = function() {
   initializeReels();
-  document.getElementById("spinButton").addEventListener("click", function() {
-    spin(this);
-  });
+  const spinBtn = document.getElementById("spinButton");
+  if (spinBtn) {
+    spinBtn.addEventListener("click", function() {
+      spin(this);
+    });
+  }
 };
 
+// Tela de carregamento
 window.addEventListener("DOMContentLoaded", function () {
   const loadingBar = document.getElementById("loading-bar");
   const loadingPercent = document.getElementById("loading-percent");
   const loadingView = document.getElementById("loading-view");
+
+  // Só prossegue se todos os elementos estiverem presentes
+  if (!loadingBar || !loadingPercent || !loadingView) return;
 
   let progress = 0;
   const interval = setInterval(() => {
@@ -361,5 +399,5 @@ window.addEventListener("DOMContentLoaded", function () {
     loadingPercent.textContent = Math.floor(progress) + "%";
   }, 50);
 
-  // ... o restante do seu código atual do game.js abaixo ...
+  // ... pode incluir aqui outras inicializações se necessário ...
 });

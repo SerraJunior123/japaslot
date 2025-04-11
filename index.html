@@ -9,27 +9,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
+  <!-- Loading View -->
   <div id="loading-view">
     <div class="loading-logo"></div>
     <div id="loading-bar-container">
       <div id="loading-bar">
+        <!-- Caso queira utilizar o "loading-bar-fill", mantenha-o; caso contrário, pode ser removido -->
         <div id="loading-bar-fill"></div>
       </div>
-      <div id="loading-percentage">0%</div>
+      <!-- Foi alterado para "loading-percent" para corresponder ao JS -->
+      <div id="loading-percent">0%</div>
     </div>
-    
-
   </div>
   
   <!-- Container para o efeito de fogo (fica atrás do conteúdo principal) -->
-
   <div id="tsparticles-fogo"></div>
-
 
   <!-- Container para partículas de fundo (tsParticles) -->
   <div id="tsparticles" style="position: fixed; width: 100%; height: 100%; z-index: 0;"></div>
   
-
   <div class="background"></div>
   <div class="content">
     <!-- Imagens bônus -->
@@ -41,10 +39,15 @@
     
     <!-- Máquina de Slots -->
     <div class="slot-machine">
-      
-      <div class="reel"><div class="reel-content" id="reel1"></div></div>
-      <div class="reel"><div class="reel-content" id="reel2"></div></div>
-      <div class="reel"><div class="reel-content" id="reel3"></div></div>
+      <div class="reel">
+        <div class="reel-content" id="reel1"></div>
+      </div>
+      <div class="reel">
+        <div class="reel-content" id="reel2"></div>
+      </div>
+      <div class="reel">
+        <div class="reel-content" id="reel3"></div>
+      </div>
     </div>
 
     <!-- Controles -->
@@ -54,7 +57,7 @@
         <div class="bet">Aposta: <span id="betAmount">1</span></div>
         <button onclick="changeBet(1)">+</button>
       </div>
-      <!-- Remova o onclick inline; o botão será configurado via JS -->
+      <!-- Botão de girar, o evento é configurado via JS -->
       <button class="spin-button" id="spinButton">Girar</button>
       <div class="credits">Créditos: <span id="creditsAmount">100</span></div>
     </div>
@@ -83,7 +86,7 @@
   <!-- Seu código principal -->
   <script src="game.js"></script>
   
-  <!-- Configuração das partículas de fundo (tsparticles) -->
+  <!-- Configuração das partículas de fundo (tsParticles) -->
   <script>
     tsParticles.load("tsparticles", {
       fullScreen: { enable: false },

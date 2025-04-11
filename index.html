@@ -2,55 +2,71 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=1080, initial-scale=1.0" />
   <title>JAPA SLOT</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Anime.js para animações -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
+  <div id="loading-view">
+    <div class="loading-logo"></div>
+    <div id="loading-bar-container">
+      <div id="loading-bar">
+        <div id="loading-bar-fill"></div>
+      </div>
+      <div id="loading-percentage">0%</div>
+    </div>
+    
+
+  </div>
+  
+  <!-- Container para o efeito de fogo (fica atrás do conteúdo principal) -->
+
+  <div id="tsparticles-fogo"></div>
+
+
+  <!-- Container para partículas de fundo (tsParticles) -->
+  <div id="tsparticles" style="position: fixed; width: 100%; height: 100%; z-index: 0;"></div>
   
 
   <div class="background"></div>
   <div class="content">
+    <!-- Imagens bônus -->
     <img id="bonusImage" src="images/bonus.png" alt="Bônus" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
-
-    <img id="bonusImage" src="images/bonus.png" alt="Bônus" style="
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 300px;
-  height: auto;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  pointer-events: none;
-" />
-
+    <img id="bonusImage2" src="images/bonus.png" alt="Bônus" style="display: none; position: fixed; top: 50%; left: 50%; width: 300px; height: auto; transform: translate(-50%, -50%); z-index: 9999; pointer-events: none;">
+    
+    <!-- Título -->
     <img src="images/titulo.webp" alt="JAPA SLOT" />
+    
+    <!-- Máquina de Slots -->
     <div class="slot-machine">
+      
       <div class="reel"><div class="reel-content" id="reel1"></div></div>
       <div class="reel"><div class="reel-content" id="reel2"></div></div>
       <div class="reel"><div class="reel-content" id="reel3"></div></div>
     </div>
-        <div class="controls">
+
+    <!-- Controles -->
+    <div class="controls">
       <div class="bet-controls">
         <button onclick="changeBet(-1)">-</button>
         <div class="bet">Aposta: <span id="betAmount">1</span></div>
         <button onclick="changeBet(1)">+</button>
       </div>
-      <button class="spin-button" id="spinButton" onclick="spin(this)">Girar</button>
+      <!-- Remova o onclick inline; o botão será configurado via JS -->
+      <button class="spin-button" id="spinButton">Girar</button>
       <div class="credits">Créditos: <span id="creditsAmount">100</span></div>
     </div>
   </div>
 
-  
+  <!-- Banner promocional -->
   <div class="banner-content">
     <img src="images/barra1.png" alt="Mensagem promocional" />
     <img src="images/barra1.png" alt="Mensagem promocional duplicada" />
   </div>
-  
-  
-  
 
+  <!-- Modal de sem créditos -->
   <div class="modal" id="outOfCreditsModal">
     <div class="modal-content">
       <p>Falha ao efetuar transação!<br>Deseja assistir a um anúncio para continuar jogando?</p>
@@ -59,6 +75,53 @@
     </div>
   </div>
 
+  <!-- Som de vitória -->
+  <audio id="winSound" src="sounds/win.mp3" preload="auto"></audio>
+
+  <!-- tsParticles: biblioteca para partículas -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
+  <!-- Seu código principal -->
   <script src="game.js"></script>
+  
+  <!-- Configuração das partículas de fundo (tsparticles) -->
+  <script>
+    tsParticles.load("tsparticles", {
+      fullScreen: { enable: false },
+      background: { color: "#1a1a1a" },
+      particles: {
+        number: { value: 60, density: { enable: true, area: 800 } },
+        color: { value: ["#FFD700", "#FFA500", "#FFF8DC"] },
+        shape: { type: "circle" },
+        opacity: {
+          value: 0.7,
+          random: true,
+          anim: { enable: true, speed: 1, opacity_min: 0.3, sync: false }
+        },
+        size: {
+          value: 3,
+          random: true,
+          anim: { enable: true, speed: 2, size_min: 0.5, sync: false }
+        },
+        move: {
+          enable: true,
+          speed: 0.6,
+          direction: "none",
+          random: true,
+          straight: false,
+          outModes: { default: "out" }
+        }
+      },
+      interactivity: {
+        events: {
+          onHover: { enable: true, mode: "bubble" },
+          onClick: { enable: true, mode: "repulse" }
+        },
+        modes: {
+          bubble: { distance: 100, size: 6, duration: 2, opacity: 1, speed: 3 },
+          repulse: { distance: 150, duration: 0.4 }
+        }
+      }
+    });
+  </script>
 </body>
 </html>

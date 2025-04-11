@@ -16,7 +16,7 @@ const symbols = [
 let stopIndexes = [];
 let matchedSymbols = new Set();
 
-// Função para formatar créditos em reais
+// Formata créditos para reais
 function formatCredits(value) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -24,7 +24,7 @@ function formatCredits(value) {
 function getRandomSymbol() {
   const weightedSymbols = [
     { symbol: 'images/tigre.webp', weight: 25 },
-    { symbol: 'images/checa.webp', weight: 5 },       // Mais raro
+    { symbol: 'images/checa.webp', weight: 5 },
     { symbol: 'images/aranha.webp', weight: 20 },
     { symbol: 'images/pinto.webp', weight: 20 },
     { symbol: 'images/cobra.webp', weight: 20 },
@@ -47,7 +47,6 @@ function initializeReels() {
       const img = document.createElement('img');
       img.src = getRandomSymbol();
       img.className = 'symbol';
-
       const wrapper = document.createElement('div');
       wrapper.className = 'symbol-wrapper';
       wrapper.appendChild(img);
@@ -56,9 +55,7 @@ function initializeReels() {
   });
 }
 
-
 function changeBet(direction) {
-  // direction: +1 ou -1
   betIndex = Math.min(Math.max(betIndex + direction, 0), bets.length - 1);
   bet = bets[betIndex];
   document.getElementById('betAmount').textContent = formatCredits(bet);
@@ -71,7 +68,7 @@ function spin(button) {
     return;
   }
   
-  // Remove efeitos anteriores dos símbolos vencedores
+  // Remove efeitos anteriores de símbolos vencedores
   matchedSymbols.forEach(s => {
     s.classList.remove(
       'winning', 'win-tigre', 'win-aranha', 'win-perereca',
@@ -80,7 +77,7 @@ function spin(button) {
   });
   matchedSymbols.clear();
   
-  // Oculta a imagem bônus, se estiver visível
+  // Oculta imagem bônus, se visível
   const bonusImg = document.getElementById('bonusImage');
   if (bonusImg) {
     bonusImg.style.display = 'none';
@@ -91,7 +88,7 @@ function spin(button) {
   credits -= bet;
   document.getElementById('creditsAmount').textContent = formatCredits(credits);
   
-  // Cria partículas no botão girar
+  // Cria partículas animadas no botão de girar
   for (let i = 0; i < 80; i++) {
     const p = document.createElement('span');
     p.className = 'particle';
@@ -111,7 +108,6 @@ function spin(button) {
     const stopIndex = Math.min(baseStopIndex + variation, 16);
     stopIndexes.push(stopIndex);
     const translateY = -(stopIndex * 100);
-    
     setTimeout(() => {
       reel.style.transition = 'transform 1s linear';
       reel.style.transform = `translateY(${translateY}px)`;
@@ -160,7 +156,6 @@ function createParticlesForSymbol(symbol, type) {
     'cobra': 'orange', 'pinto': 'pink', 'arara': 'cyan',
     'checa': 'violet', 'default': 'white'
   };
-  
   const wrapper = symbol.parentElement;
   for (let i = 0; i < 15; i++) {
     const particle = document.createElement('span');
@@ -175,9 +170,7 @@ function createParticlesForSymbol(symbol, type) {
 
 function createBonusEffect() {
   const bonusImg = document.getElementById('bonusImage');
-  bonusImg.classList.add('bounce-zoom'); // Aplica o efeito bounce zoom (pulo com zoom)
-  
-  // Cria partículas extras (faíscas) ao redor da imagem bônus com duração de 4s
+  bonusImg.classList.add('bounce-zoom');
   for (let i = 0; i < 100; i++) {
     const spark = document.createElement('span');
     spark.className = 'bonus-particle';
@@ -187,12 +180,22 @@ function createBonusEffect() {
     document.body.appendChild(spark);
     setTimeout(() => spark.remove(), 4000);
   }
-  
-  // Remove a imagem bônus após 3 segundos
   setTimeout(() => {
     bonusImg.style.display = 'none';
     bonusImg.classList.remove('bounce-zoom');
   }, 3000);
+}
+
+function createCoinExplosion() {
+  const container = document.body;
+  for (let i = 0; i < 30; i++) {
+    const coin = document.createElement('span');
+    coin.className = 'coin-explosion';
+    coin.style.left = `${50 + (Math.random() * 40 - 20)}%`;
+    coin.style.top = `${50 + (Math.random() * 40 - 20)}%`;
+    container.appendChild(coin);
+    setTimeout(() => coin.remove(), 1500);
+  }
 }
 
 function checkWin() {
@@ -200,6 +203,7 @@ function checkWin() {
   let win = 0;
   let checaCount = 0;
   
+  // Remove classes de símbolos vencedores antigos
   reels.forEach(reel => {
     Array.from(reel.querySelectorAll('.symbol')).forEach(child => {
       child.classList.remove(
@@ -217,7 +221,9 @@ function checkWin() {
       const idx = stopIndexes[col] + row;
       if (idx < 0 || idx >= 20) continue;
       const wrapper = reels[col].children[idx];
+      if (!wrapper) continue;
       const symbol = wrapper.querySelector('img');
+      if (!symbol) continue;
       visibleSymbols[row][col] = symbol;
     }
   }
@@ -232,7 +238,6 @@ function checkWin() {
           if (getFileName(s.src).includes('checa')) checaCount++;
         });
         win += bet * multiplier;
-        // Se a combinação for de "checa" e horizontal (multiplier 3), adicionar jackpot bonus
         if (names[0].includes('checa') && multiplier === 3) {
           win += 50;
           console.log("Jackpot ativado para CHECA!");
@@ -241,20 +246,19 @@ function checkWin() {
     }
   };
   
-  // Multiplicador horizontal reduzido para 3x
+  // Combinações horizontais
   for (let row = 0; row < 3; row++) {
     checkMatch(visibleSymbols[row], 3);
   }
   
-  // Multiplicador diagonal reduzido para 6x
+  // Diagonais
   checkMatch([visibleSymbols[0][0], visibleSymbols[1][1], visibleSymbols[2][2]], 6);
   checkMatch([visibleSymbols[0][2], visibleSymbols[1][1], visibleSymbols[2][0]], 6);
   
   if (win > 0) {
     credits += win;
     document.getElementById('creditsAmount').textContent = formatCredits(credits);
-    
-    // Exibe o bônus somente se houver pelo menos 3 "checa"
+    createCoinExplosion();
     if (checaCount >= 3) {
       const bonusImg = document.getElementById('bonusImage');
       if (bonusImg) {
@@ -276,4 +280,86 @@ function closeModal() {
   document.getElementById('outOfCreditsModal').style.display = 'none';
 }
 
-window.onload = initializeReels;
+function animarSimbolosVencedores() {
+  anime({
+    targets: '.win-symbol',
+    scale: [1, 1.4],
+    opacity: [1, 0.6],
+    duration: 400,
+    easing: 'easeInOutQuad',
+    direction: 'alternate',
+    loop: 3
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.win-symbol').forEach(el => {
+      el.classList.remove('win-symbol');
+    });
+  }, 2000);
+}
+
+// Configuração do efeito de fogo para o container "fireEffect" via tsParticles
+tsParticles.load("fireEffect", {
+  fullScreen: { enable: false },
+  background: { color: { value: "transparent" } },
+  particles: {
+    number: { value: 0 },
+    color: { value: ["#FF4500", "#FFA500", "#FFD700"] },
+    shape: { type: "circle" },
+    size: {
+      value: { min: 5, max: 12 },
+      animation: { enable: true, speed: 5, minimumValue: 3 }
+    },
+    opacity: {
+      value: { min: 0.4, max: 1 },
+      animation: { enable: true, speed: 2, minimumValue: 0.1 }
+    },
+    move: {
+      enable: true,
+      speed: { min: 10, max: 20 },
+      direction: "top",
+      outModes: { default: "destroy" },
+      straight: false
+    }
+  },
+  emitters: {
+    direction: "top",
+    life: { count: 0, duration: 0.1, delay: 0 },
+    rate: { delay: 0.1, quantity: 5 },
+    size: { width: 100, height: 0 },
+    position: { x: 50, y: 100 }
+  },
+  interactivity: { events: {} }
+});
+
+// Inicializa os rolos e associa o evento ao botão de girar
+window.onload = function() {
+  initializeReels();
+  document.getElementById("spinButton").addEventListener("click", function() {
+    spin(this);
+  });
+};
+
+window.addEventListener("DOMContentLoaded", function () {
+  const loadingBar = document.getElementById("loading-bar");
+  const loadingPercent = document.getElementById("loading-percent");
+  const loadingView = document.getElementById("loading-view");
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 3; // aumenta mais lentamente
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      setTimeout(() => {
+        loadingView.style.opacity = 0;
+        setTimeout(() => {
+          loadingView.style.display = "none";
+        }, 1000);
+      }, 1000); // tempo extra antes de sumir
+    }
+    loadingBar.style.width = progress + "%";
+    loadingPercent.textContent = Math.floor(progress) + "%";
+  }, 50);
+
+  // ... o restante do seu código atual do game.js abaixo ...
+});

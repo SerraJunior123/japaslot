@@ -943,10 +943,3 @@ img {
   font-size: 1rem;
 }
 
-
-.content {
-
-  height: 100dvh; /* substitui height: 100% + max-height */
-  overflow: hidden;
-}
-

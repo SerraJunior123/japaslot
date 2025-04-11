@@ -866,7 +866,7 @@ img {
   left: 0;
   width: 100%; /* usa 100% da largura da tela */
   height: 100%; /* usa 100% da altura */
-  overflow: hidden;
+  overflow-x:  hidden;
   z-index: 9999;
   transition: opacity 1s ease;
   display: flex;
@@ -884,7 +884,7 @@ img {
   background-image: url('images/seu-background.jpg');
   background-size: cover;
   background-position: center; 
-  background-repeat: no-repeat;
+ overflow: hidden;
   z-index: 0;
 }
 

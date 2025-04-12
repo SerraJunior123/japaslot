@@ -82,6 +82,16 @@ function startBackgroundSound() {
   }
 }
 
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) {
+    bgSound.pause();
+  } else {
+    bgSound.play().catch(e => {
+      console.warn("Erro ao retomar a música de fundo:", e);
+    });
+  }
+});
+
 // Função que executa o giro dos rolos
 function spin(button) {
   // Inicia o som de fundo na primeira interação, se ainda não estiver tocando
@@ -330,6 +340,16 @@ function checkWin() {
     }
   }
 }
+function buyCredits() {
+  // Aqui você pode substituir por lógica real de compra futuramente
+  credits += 100;
+  updateCreditsDisplay();
+  closeModal();
+}
+function updateCreditsDisplay() {
+  document.getElementById("creditsAmount").textContent = credits;
+}
+
 
 // Incrementa créditos após assistir a um anúncio
 function watchAd() {

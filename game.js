@@ -14,6 +14,10 @@ const symbols = [
   'images/perereca.webp'
 ];
 
+// Som de vitória – utilizado via JavaScript
+const winSound = new Audio('sounds/win.mp3');
+winSound.volume = 0.9; // Ajuste o volume conforme necessário
+
 let stopIndexes = [];
 let matchedSymbols = new Set();
 
@@ -22,6 +26,7 @@ function formatCredits(value) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+// Retorna um símbolo aleatório considerando pesos
 function getRandomSymbol() {
   const weightedSymbols = [
     { symbol: 'images/tigre.webp', weight: 25 },
@@ -41,8 +46,8 @@ function getRandomSymbol() {
   return weightedSymbols[0].symbol;
 }
 
+// Inicializa os rolos preenchendo-os com 20 símbolos cada
 function initializeReels() {
-  // Procura pelos elementos com a classe .reel-content
   document.querySelectorAll('.reel-content').forEach(reel => {
     reel.innerHTML = '';
     for (let i = 0; i < 20; i++) {
@@ -57,17 +62,39 @@ function initializeReels() {
   });
 }
 
+// Altera o valor da aposta conforme a direção (+ ou -)
 function changeBet(direction) {
   betIndex = Math.min(Math.max(betIndex + direction, 0), bets.length - 1);
   bet = bets[betIndex];
-  // Verifica se o elemento existe antes de modificar o textContent
   const betAmountEl = document.getElementById('betAmount');
   if (betAmountEl) {
     betAmountEl.textContent = formatCredits(bet);
   }
 }
 
+// Função para iniciar o som de fundo
+function startBackgroundSound() {
+  const bgSound = document.getElementById("bgSound");
+  if (bgSound && bgSound.paused) {
+    bgSound.volume = 0.4; 
+    bgSound.currentTime = 0;
+    bgSound.play().catch(err => console.warn("Não foi possível iniciar o áudio de fundo:", err));
+  }
+}
+
+// Função que executa o giro dos rolos
 function spin(button) {
+  // Inicia o som de fundo na primeira interação, se ainda não estiver tocando
+  startBackgroundSound();
+
+  // Toca o som de clique ao pressionar o botão
+  const clickSound = document.getElementById("clickSound");
+  if (clickSound) {
+    clickSound.volume = 0.7; 
+    clickSound.currentTime = 0;
+    clickSound.play().catch(err => console.warn("Erro ao reproduzir o som de clique:", err));
+  }
+  
   if (isSpinning) return;
   if (credits < bet) {
     const modal = document.getElementById('outOfCreditsModal');
@@ -86,7 +113,7 @@ function spin(button) {
   });
   matchedSymbols.clear();
   
-  // Oculta imagem bônus, se visível
+  // Oculta a imagem bônus, se estiver visível
   const bonusImg = document.getElementById('bonusImage');
   if (bonusImg) {
     bonusImg.style.display = 'none';
@@ -139,6 +166,7 @@ function spin(button) {
   }, 1500);
 }
 
+// Aplica efeito de vitória conforme o símbolo
 function applyWinEffect(symbol) {
   const fileName = symbol.src.split('/').pop();
   if (fileName.includes('tigre')) {
@@ -168,6 +196,7 @@ function applyWinEffect(symbol) {
   }
 }
 
+// Cria partículas temáticas para cada tipo de símbolo vencedor
 function createParticlesForSymbol(symbol, type) {
   const colors = {
     'tigre': 'gold', 'aranha': 'red', 'perereca': 'lime',
@@ -186,6 +215,7 @@ function createParticlesForSymbol(symbol, type) {
   }
 }
 
+// Cria efeito bônus (partículas e animação bounce)
 function createBonusEffect() {
   const bonusImg = document.getElementById('bonusImage');
   if (bonusImg) {
@@ -206,6 +236,7 @@ function createBonusEffect() {
   }
 }
 
+// Cria efeito de explosão de moedas
 function createCoinExplosion() {
   const container = document.body;
   for (let i = 0; i < 30; i++) {
@@ -218,12 +249,13 @@ function createCoinExplosion() {
   }
 }
 
+// Verifica combinações vencedoras na matriz 3x3 dos símbolos visíveis
 function checkWin() {
   const reels = document.querySelectorAll('.reel-content');
   let win = 0;
   let checaCount = 0;
   
-  // Remove classes de símbolos vencedores antigos
+  // Remove classes de vitória anteriores
   reels.forEach(reel => {
     Array.from(reel.querySelectorAll('.symbol')).forEach(child => {
       child.classList.remove(
@@ -236,7 +268,7 @@ function checkWin() {
   const getFileName = (src) => src.substring(src.lastIndexOf('/') + 1);
   const visibleSymbols = [[], [], []];
   
-  // Monta uma matriz 3x3 dos símbolos visíveis
+  // Monta uma matriz 3x3 com os símbolos visíveis de cada rolo
   for (let col = 0; col < 3; col++) {
     for (let row = 0; row < 3; row++) {
       const idx = stopIndexes[col] + row;
@@ -268,12 +300,11 @@ function checkWin() {
     }
   };
   
-  // Combinações horizontais
+  // Verifica combinações horizontais
   for (let row = 0; row < 3; row++) {
     checkMatch(visibleSymbols[row], 3);
   }
-  
-  // Diagonais
+  // Verifica combinações diagonais
   checkMatch([visibleSymbols[0][0], visibleSymbols[1][1], visibleSymbols[2][2]], 6);
   checkMatch([visibleSymbols[0][2], visibleSymbols[1][1], visibleSymbols[2][0]], 6);
   
@@ -283,6 +314,11 @@ function checkWin() {
     if (creditsAmountEl) {
       creditsAmountEl.textContent = formatCredits(credits);
     }
+    
+    // Reproduz o som de vitória, reiniciando o áudio e tratando possíveis erros
+    winSound.currentTime = 0;
+    winSound.play().catch(error => console.warn("Erro ao reproduzir som de vitória:", error));
+    
     createCoinExplosion();
     if (checaCount >= 3) {
       const bonusImg = document.getElementById('bonusImage');
@@ -295,6 +331,7 @@ function checkWin() {
   }
 }
 
+// Incrementa créditos após assistir a um anúncio
 function watchAd() {
   closeModal();
   credits += 50;
@@ -304,6 +341,7 @@ function watchAd() {
   }
 }
 
+// Fecha o modal de créditos insuficientes
 function closeModal() {
   const modal = document.getElementById('outOfCreditsModal');
   if (modal) {
@@ -311,6 +349,7 @@ function closeModal() {
   }
 }
 
+// Função de animação adicional para os símbolos vencedores (utilizando anime.js)
 function animarSimbolosVencedores() {
   anime({
     targets: '.win-symbol',
@@ -362,7 +401,7 @@ tsParticles.load("fireEffect", {
   interactivity: { events: {} }
 });
 
-// Inicializa os rolos e associa o evento ao botão de girar, garantindo que o DOM já esteja carregado
+// Inicializa os rolos e associa o evento de clique ao botão de girar após o carregamento do DOM
 window.onload = function() {
   initializeReels();
   const spinBtn = document.getElementById("spinButton");
@@ -373,18 +412,17 @@ window.onload = function() {
   }
 };
 
-// Tela de carregamento
+// Tela de carregamento: mostra uma barra de progresso e depois oculta a tela
 window.addEventListener("DOMContentLoaded", function () {
   const loadingBar = document.getElementById("loading-bar");
   const loadingPercent = document.getElementById("loading-percent");
   const loadingView = document.getElementById("loading-view");
 
-  // Só prossegue se todos os elementos estiverem presentes
   if (!loadingBar || !loadingPercent || !loadingView) return;
 
   let progress = 0;
   const interval = setInterval(() => {
-    progress += Math.random() * 3; // aumenta mais lentamente
+    progress += Math.random() * 3;
     if (progress >= 100) {
       progress = 100;
       clearInterval(interval);
@@ -393,12 +431,11 @@ window.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
           loadingView.style.display = "none";
         }, 1000);
-      }, 1000); // tempo extra antes de sumir
+      }, 1000);
     }
     loadingBar.style.width = progress + "%";
     loadingPercent.textContent = Math.floor(progress) + "%";
   }, 50);
-
-  // ... pode incluir aqui outras inicializações se necessário ...
 });
+
 window.scrollTo(0, 0);

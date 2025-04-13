@@ -340,13 +340,38 @@ function checkWin() {
     }
   }
 }
-function buyCredits() {
-  // Aqui você pode substituir por lógica real de compra futuramente
-  credits += 100;
-  updateCreditsDisplay();
-  closeModal();
+async function buyCredits() {
+  try {
+    const transacaoId = Date.now(); // ID único
+    const valor = 10; // R$10,00
+
+    const response = await fetch('http://localhost:3000/criar-pagamento', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        transaction_amount: valor,
+        description: 'Compra de créditos para jogo',
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha na requisição: ' + response.statusText);
+    }
+
+    const data = await response.json();
+    const urlPagamento = data.init_point; // URL para pagamento, assumindo que está no campo init_point
+
+    // Redireciona para a URL de pagamento
+    window.open(urlPagamento, '_blank');
+  } catch (error) {
+    console.error('Erro na requisição para criar o pagamento:', error);
+  }
 }
+
 function updateCreditsDisplay() {
+  // Supondo que você tenha uma variável 'credits' para atualizar a quantidade de créditos
   document.getElementById("creditsAmount").textContent = credits;
 }
 
@@ -430,6 +455,18 @@ window.onload = function() {
       spin(this);
     });
   }
+  window.addEventListener("load", () => {
+    const creditoPendentes = localStorage.getItem("addCredits");
+    if (creditoPendentes) {
+      let atual = parseInt(document.getElementById("creditsAmount").textContent);
+      atual += parseInt(creditoPendentes);
+      document.getElementById("creditsAmount").textContent = atual;
+  
+      localStorage.removeItem("addCredits");
+      alert(`Você recebeu ${creditoPendentes} créditos!`);
+    }
+  });
+  
 };
 
 // Tela de carregamento: mostra uma barra de progresso e depois oculta a tela
